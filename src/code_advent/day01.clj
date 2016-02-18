@@ -3,13 +3,6 @@
   (:use clojure.test)
   (:use clojure.data))
 
-(defn add [left right]
-  (println (str "left: " left "right: " right))
-  (+ left right))
-
-(defn pos [character]
-  (if (= character \() 1 -1))
-
 (defn solve
   [input]
   (let [positions (map {\( 1 \) -1} input)
