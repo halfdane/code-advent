@@ -3,13 +3,19 @@
   (:use clojure.test)
   (:use [clojure.string :only (split split-lines)]))
 
-(defn wrap-with-dimensions [[l w h]] 
+(defn ribbon [l w h]
+  (let [wrap (min (+ l l w w) (+ w w h h) (+ h h l l)) 
+        bow (* h w l)]
+    (+ wrap bow)))
+
+(defn paper [l w h]
   (let [a (* l w)
         b (* w h)
-        c (* h l)
-        additional-paper (min a b c)]
-    [(+ (* 2 a) (* 2 b) (* 2 c) additional-paper) 
-     0]))
+        c (* h l)]
+    (+ (* 2 a) (* 2 b) (* 2 c) (min a b c))))
+
+(defn wrap-with-dimensions [[l w h]]
+  [(paper l w h) (ribbon l w h)])
 
 (defn wrap [dimension-string] 
   (wrap-with-dimensions 
