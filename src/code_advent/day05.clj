@@ -53,22 +53,36 @@
   (is (= :nice (first-rules "ugknbfddgicrmopn")))
   (is (= :nice (first-rules "aaa"))))
 
-(defn char-pairs [input]
-  (partition 2 1 input))
+(defn repeating-pair? [input]
+  (re-find #"([a-z][a-z]).*\1" input))
 
-(deftest should-get-char-pairs
-  (is (= '((\x \y) (\y \x) (\x \y)) 
-         (char-pairs "xyxy")))
-  (is (= '((\a \a) (\a \b) (\b \c) (\c \d) (\d \e) (\e \f) (\f \g) (\g \a) (\a \a)) 
-         (char-pairs "aabcdefgaa"))))
+(deftest should-find-repeating-pairs
+  (is (= true (boolean (repeating-pair? "xyxy"))))
+  (is (= false (boolean (repeating-pair? "aaa")))))
 
-(deftest should-filter-same-chars-with-others-between)
+(defn repeats-char-with-one-between? [input]
+  (re-find #"(.).\1" input))
+
+(deftest should-find-repeating-char-with-one-between
+  (is (= true (boolean (repeats-char-with-one-between? "xyx"))))
+  (is (= true (boolean (repeats-char-with-one-between? "abcdefeghi"))))
+  (is (= true (boolean (repeats-char-with-one-between? "aaa"))))
+)
 
 (defn second-rules [input]
-  (if 
-      (vowels? 3 input)
+  (if (and
+       (repeating-pair? input)
+       (repeats-char-with-one-between? input))
     :nice
     :naughty))
+
+(deftest should-find-naughties-by-second-rules
+  (is (= :naughty (second-rules "uurcxstgmygtbstg")))
+  (is (= :naughty (second-rules "ieodomkazucvgmuy"))))
+
+(deftest should-find-nicies-by-second-rules
+  (is (= :nice (second-rules "qjhvhtzxzqqjkmpb")))
+  (is (= :nice (second-rules "xxyxx"))))
 
 (defn nice? [rule input]
   (= :nice (rule input)))
