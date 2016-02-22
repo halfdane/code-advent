@@ -20,20 +20,20 @@
     (remove (set to-be-turned-off) 
             (set  (concat existing to-be-turned-on)))))
 
-(defn action-1 [verb]
+(defn action [verb]
   (case verb 
     "turn on" turn-on
     "turn off" turn-off
     "toggle" toggle))
 
-(defn set-lighting [get-action existing str]
+(defn set-lighting [existing str]
   (let [matches (re-find #"([^\d]*) (\d*),(\d*) through (\d*),(\d*)" str)
         [verb & positions] (rest matches)
         [x1 y1 x2 y2] (map read-string positions)]
-    ((get-action verb) (list x1 y1) (list x2 y2) existing)))
+    ((action verb) (list x1 y1) (list x2 y2) existing)))
 
 (defn set-lighting-multi [list-of-str]
-  (reduce (partial set-lighting action-1) '() list-of-str))
+  (reduce set-lighting '() list-of-str))
 
 (defn count-lights [list-of-str]
   (count (set-lighting-multi list-of-str)))
@@ -52,11 +52,11 @@
 
 (deftest should-interpret-single-input-line
   (is (= (turn-on '(1 0) '(2 1) '()) 
-         (set-lighting action-1 '()  "turn on 1,0 through 2,1"))))
+         (set-lighting '()  "turn on 1,0 through 2,1"))))
 
 (deftest should-interpret-multiple-input-lines
   (is (= '((2 0) (2 1)) 
-         (set-lighting-multi 
+         (set-lighting-multi
           '("turn on 1,0 through 2,1"
            "toggle 1,0 through 1,1")))))
 
